@@ -84,6 +84,10 @@ class Status < Sequel::Model(:status)
     request_window_limit - request_window_amount
   end
   
+  def window_length
+    super || 20
+  end
+  
   def sent_request!
     if left_to_reset <= 0
       self.request_window_amount = 0
