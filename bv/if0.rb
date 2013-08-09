@@ -1,6 +1,6 @@
 module BV
   class If0 < Expression
-    def initialize sexp, context
+    def initialize sexp, context = {}
       if sexp[0].is_a? Expression
         @condition, @when_zero, @else = sexp
       else
@@ -33,7 +33,7 @@ module BV
           Expression.generate(size: argsize, operators: operators).flatten.map do |arg|
             Expression.generate(size: accsize, operators: operators).flatten.map do |acc|
               Expression.generate(size: exprsize, operators: operators).flatten.map do |expr|
-                new arg, acc, expr
+                new [arg, acc, expr]
               end
             end
           end
