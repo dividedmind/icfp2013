@@ -16,5 +16,25 @@ module BV
       rest = sexp[1..-1] rescue nil
       klass.new rest, context
     end
+    
+    def operators
+      []
+    end
+  
+    def self.generate size: size, operators: operators, closed: false
+      STDERR.puts "Generating #{self.name} for size #{size} and ops #{operators.inspect}"
+      classes = []
+      if size == 1
+        classes += %i(zero one x)
+        classes += %i(y z) if closed
+      else
+        classes += Op1::OPS & operators if size > 1
+        classes += Op2::OPS & operators if size > 2
+        classes += [:if0] if size > 3 && (operators.include? :if0)
+        classes += [:fold] if size > 4 && !closed && (operators.include? :fold)
+      end
+      
+      classes.map {|x| BV::const_get(x.capitalize).generate size: size, operators: operators, closed: closed }.flatten
+    end
   end
 end

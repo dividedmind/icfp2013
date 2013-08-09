@@ -15,6 +15,10 @@ module BV
   def self.parse input
     Program.new SXP.parse(input)
   end
+  
+  def self.generate params
+    Program.generate params
+  end
 end
 
 __END__

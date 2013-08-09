@@ -1,24 +1,48 @@
 module BV
-  def self.Op2 op
-    cls = Class.new(Expression) do
-      define_method(:op){ op }
-      
-      def initialize sexp, context
+  class Op2 < Expression
+    def initialize sexp, context = {}
+      if sexp[0].is_a? Expression
+        @left, @right = sexp
+      else
         @left = Expression.parse sexp[0], context
         @right = Expression.parse sexp[1], context
       end
-      
-      def to_sexp
-        [op, @left.to_sexp, @right.to_sexp]
-      end
-      
-      def eval context
-        @left.eval(context).send op, @right.eval(context)
-      end
+    end
+    
+    def to_sexp
+      [op, @left.to_sexp, @right.to_sexp]
+    end
+    
+    def eval context
+      @left.eval(context).send op, @right.eval(context)
+    end
+    
+    def operators
+      ([op] + @left.operators + @right.operators).sort
+    end
+    
+    OPS = %i(and or xor plus)
+    
+    def self.generate size: size, operators: operators, closed: closed
+      STDERR.puts "Generating #{self.name} for size #{size} and ops #{operators.inspect}"
+      size -= 1
+      (1..(size / 2)).map do |lsize|
+        Expression.generate(size: lsize, operators: operators, closed: closed).flatten.map do |left|
+          Expression.generate(size: (size - lsize), operators: operators, closed: closed).flatten.map do |right|
+            new [left, right]
+          end
+        end
+      end.flatten
+    end
+  end
+  
+  def self.Op2 op
+    Class.new(Op2) do
+      define_method(:op){ op }
     end
   end
 
-  %w(and or xor plus).each do |op|
-    const_set op.capitalize.to_s, Op2(op.to_sym)
+  Op2::OPS.each do |op|
+    const_set op.to_s.capitalize, Op2(op.to_sym)
   end
 end

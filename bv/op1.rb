@@ -1,7 +1,8 @@
 module BV
   class Op1 < Expression
-    def initialize sexp, context
-      @arg = Expression.parse sexp[0], context
+    def initialize sexp, context = {}
+      sexp = Expression.parse sexp[0], context unless sexp.is_a?(Expression)
+      @arg = sexp
     end
     
     def to_sexp
@@ -11,6 +12,20 @@ module BV
     def eval context
       @arg.eval(context).send op
     end
+
+    OPS = %i(not shl1 shr1 shr4 shr16)
+    
+    def operators
+      ([op] + @arg.operators).sort
+    end
+    
+    def self.generate params
+      STDERR.puts "Generating #{self.name} for params #{params}"
+      Expression.generate(params.merge size: (params[:size] - 1)).flatten.map do |e|
+        new e
+      end
+    end
+
   end
   
   def self.Op1 op
@@ -19,7 +34,7 @@ module BV
     end
   end
   
-  %w(not shl1 shr1 shr4 shr16).each do |op|
-    const_set op.capitalize.to_s, Op1(op.to_sym)
+  Op1::OPS.each do |op|
+    const_set op.to_s.capitalize, Op1(op.to_sym)
   end
 end
