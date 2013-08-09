@@ -5,10 +5,11 @@ class UpstreamController < ApplicationController
   
   # Just proxy the request. Add in the auth key if not present.
   def proxy
-    response = RestClient::Request.execute method: request.method.downcase.to_sym,
+    RestClient::Request.execute(method: request.method.downcase.to_sym,
         url: UPSTREAM.expand(path: params.delete(:path), auth: (params.delete(:auth) || ENV['ICFP_AUTH_KEY'])).to_str,
         payload: request.body,
-        headers: {}
-    render text: response
+        headers: {}) do |response, request, result, &block|
+          render text: response.body, status: response.code, content_type: response.headers[:content_type]
+    end
   end
 end
