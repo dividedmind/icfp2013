@@ -45,6 +45,10 @@ describe ProblemController do
             invoke!
             expect(Problem['foo']).to be_solved
           end
+          it "records the solution" do
+            invoke!
+            expect(Problem['foo'].solution).to eql("bar")
+          end
         end
         
         context "and the guess is wrong" do

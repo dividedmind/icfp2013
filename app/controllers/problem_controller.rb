@@ -1,6 +1,6 @@
 class ProblemController < ApplicationController
   def index
-    problems = Problem.order_by(:size.asc)
+    problems = Problem.where(kind: "contest").order_by(:size.asc)
     problems = Problem.download if problems.empty?
     render json: problems
   end
@@ -21,7 +21,7 @@ class ProblemController < ApplicationController
         response = call_oracle
         resp = JSON.parse response.body rescue {}
         if resp["status"] == "win"
-          problem.update solved: true
+          problem.update solved: true, solution: program
         elsif response.code == 412
           problem.update solved: true
         elsif response.code == 410

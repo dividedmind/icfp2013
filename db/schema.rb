@@ -6,6 +6,8 @@ Sequel.migration do
       column :operators, "text[]", :null=>false
       column :solved, "boolean", :default=>false, :null=>false
       column :expires_at, "timestamp without time zone"
+      column :solution, "text"
+      column :kind, "text", :default=>"contest", :null=>false
       
       primary_key [:id]
       
