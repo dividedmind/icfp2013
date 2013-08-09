@@ -8,9 +8,9 @@ It's live at http://icfp2013lf.herokuapp.com and has exact same interface as the
 Features:
 - ~~automatic authorization - I think it's fine as long as we don't publicize the address.~~ 
   - (address is public b/c of irc, use `?auth=<>` as usual)
+- throttling
 
 To be implemented:
-- throttling
 - local problem generation
 - caching
 - sanity checking
