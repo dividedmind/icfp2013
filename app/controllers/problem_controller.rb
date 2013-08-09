@@ -6,9 +6,9 @@ class ProblemController < ApplicationController
   end
   
   def guess
-    id = params[:id]
-    program = params[:program]
-    
+    req = JSON.parse(request.body.string) rescue {}
+    id = req['id']
+    program = req['program']
     
     params[:path] = "guess"
 
