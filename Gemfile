@@ -16,6 +16,7 @@ gem 'rest-client'
 group :development, :test do
   gem 'rspec-rails', '~> 2.0'
   gem 'webmock', require: false
+  gem 'database_cleaner'
 end
 
 # Use SCSS for stylesheets

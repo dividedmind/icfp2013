@@ -1,6 +1,8 @@
 require 'oracle'
 
 class Problem < Sequel::Model
+  unrestrict_primary_key
+  
   def self.download
     problems = Oracle.myproblems
     problems.each do |problem|
@@ -22,5 +24,13 @@ class Problem < Sequel::Model
     super.tap do |res|
       res['timeLeft'] = [expires_at - Time.now, 0].max if expires_at
     end
+  end
+  
+  def expired?
+    expires_at < Time.now
+  end
+  
+  def solved?
+    solved
   end
 end

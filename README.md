@@ -9,10 +9,12 @@ Features:
 - ~~automatic authorization - I think it's fine as long as we don't publicize the address.~~ 
   - (address is public b/c of irc, use `?auth=<>` as usual)
 - throttling
+- caching (of problem list, with auto updating when submitting guesses through the proxy)
 
 To be implemented:
+- local evaluation
 - local problem generation
-- caching
 - sanity checking
+- answer memoizing
 - IRC bot reporting
 - other ideas? Open an issue.
