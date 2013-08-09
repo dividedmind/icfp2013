@@ -14,7 +14,7 @@ module BV
       end
 
       def self.generate params
-        STDERR.puts "Generating #{self.name} for params #{params}"
+        # STDERR.puts "Generating #{self.name} for params #{params}"
         if params[:size] == 1
           [new]
         else

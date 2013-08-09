@@ -20,7 +20,7 @@ module BV
     end
     
     def self.generate params
-      STDERR.puts "Generating #{self.name} for params #{params}"
+      # STDERR.puts "Generating #{self.name} for params #{params}"
       Expression.generate(params.merge size: (params[:size] - 1)).flatten.map do |e|
         new e
       end

@@ -24,7 +24,7 @@ module BV
     OPS = %i(and or xor plus)
     
     def self.generate size: size, operators: operators, closed: closed
-      STDERR.puts "Generating #{self.name} for size #{size} and ops #{operators.inspect}"
+      # STDERR.puts "Generating #{self.name} for size #{size} and ops #{operators.inspect}"
       size -= 1
       (1..(size / 2)).map do |lsize|
         if lsize * 2 != size
