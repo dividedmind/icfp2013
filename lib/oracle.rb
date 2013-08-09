@@ -25,7 +25,7 @@ module Oracle
     def get path
       response = call path: path.to_s, auth: auth_key
       result = JSON.parse(response.body) rescue { body: response.body }
-      result[:status_code] = response.code
+      result[:status_code] = response.code if result.is_a? Hash
       return result
     end
     

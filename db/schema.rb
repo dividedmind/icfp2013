@@ -1,5 +1,15 @@
 Sequel.migration do
   change do
+    create_table(:problems) do
+      column :id, "text", :null=>false
+      column :size, "integer", :null=>false
+      column :operators, "text[]", :null=>false
+      column :solved, "boolean", :default=>false, :null=>false
+      column :expires_at, "timestamp without time zone"
+      
+      primary_key [:id]
+    end
+    
     create_table(:schema_migrations) do
       column :filename, "text", :null=>false
       
