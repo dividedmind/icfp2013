@@ -6,6 +6,8 @@ gem 'rails', '4.0.0'
 gem 'pg'
 gem 'sequel-rails'
 
+gem 'dotenv-rails', :groups => [:development, :test]
+
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
 
