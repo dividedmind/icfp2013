@@ -7,11 +7,13 @@ module Oracle
   class << self
     def call method: nil, path: "", auth: "", payload: nil
       method ||= payload.nil? ? :get : :post
-      RestClient::Request.execute(method: method,
-        url: UPSTREAM.expand(path: path, auth: auth).to_str,
-        payload: payload,
-        headers: {}) do |response, request, result, &block|
-          response
+      Status.throttle! do
+        RestClient::Request.execute(method: method,
+          url: UPSTREAM.expand(path: path, auth: auth).to_str,
+          payload: payload,
+          headers: {}) do |response, request, result, &block|
+            response
+        end
       end
     end
     

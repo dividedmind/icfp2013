@@ -14,7 +14,7 @@ Sequel.migration do
       Fixnum :cpu_window_amount
       Fixnum :cpu_window_limit
       Numeric :cpu_total_time
-      interval :window_length
+      Numeric :window_length
     end
   end
 

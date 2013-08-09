@@ -20,7 +20,7 @@ Sequel.migration do
       column :cpu_window_amount, "integer"
       column :cpu_window_limit, "integer"
       column :cpu_total_time, "numeric"
-      column :window_length, "interval"
+      column :window_length, "numeric"
     end
   end
 end
