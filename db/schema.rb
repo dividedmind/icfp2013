@@ -8,6 +8,8 @@ Sequel.migration do
       column :expires_at, "timestamp without time zone"
       
       primary_key [:id]
+      
+      index [:size]
     end
     
     create_table(:schema_migrations) do

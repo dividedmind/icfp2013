@@ -13,5 +13,7 @@ class Problem < Sequel::Model
       
       record.save
     end
+    
+    Problem.order_by(:size.asc)
   end
 end
