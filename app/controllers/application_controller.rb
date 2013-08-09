@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
     response = Oracle.call method: request.method.downcase.to_sym,
       path: params[:path],
       auth: params[:auth],
-      payload: request.body
+      payload: request.body.string
   end
   
   def render_response response
