@@ -10,10 +10,17 @@ class Problem < Sequel::Model
       record.operators = problem['operators'].pg_array
       record.solved = !!problem['solved']
       record.expires_at = Time.now + problem['timeLeft'].seconds if problem['timeLeft']
+      record.expires_at = nil if problem['timeLeft'] == 0
       
       record.save
     end
     
     Problem.order_by(:size.asc)
+  end
+  
+  def as_json *_
+    super.tap do |res|
+      res['timeLeft'] = [expires_at - Time.now, 0].max if expires_at
+    end
   end
 end
