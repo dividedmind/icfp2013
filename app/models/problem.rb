@@ -27,7 +27,7 @@ class Problem < Sequel::Model
   end
   
   def expired?
-    expires_at < Time.now
+    expires_at < Time.now rescue false
   end
   
   def solved?
