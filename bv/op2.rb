@@ -27,9 +27,15 @@ module BV
       STDERR.puts "Generating #{self.name} for size #{size} and ops #{operators.inspect}"
       size -= 1
       (1..(size / 2)).map do |lsize|
-        Expression.generate(size: lsize, operators: operators, closed: closed).flatten.map do |left|
-          Expression.generate(size: (size - lsize), operators: operators, closed: closed).flatten.map do |right|
-            new [left, right]
+        if lsize != size / 2
+          Expression.generate(size: lsize, operators: operators, closed: closed).flatten.map do |left|
+            Expression.generate(size: (size - lsize), operators: operators, closed: closed).flatten.map do |right|
+              new [left, right]
+            end
+          end
+        else
+          Expression.generate(size: lsize, operators: operators, closed: closed).flatten.repeated_combination(2).map do |l|
+            new l
           end
         end
       end.flatten

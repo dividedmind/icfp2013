@@ -35,7 +35,7 @@ module BV
         size -= 4
         tfold = :tfold
       end
-      exprs = Expression.generate(size: size - 1, operators: operators.sort, closed: tfold).flatten.find_all {|e|e.operators.uniq == operators.uniq }
+      exprs = Expression.generate(size: size - 1, operators: operators.sort, closed: tfold).flatten.find_all {|e|e.operators.uniq == operators.uniq }.uniq
       if tfold
         exprs = exprs.map do |expr|
           Fold.new [X.new, Zero.new, expr]

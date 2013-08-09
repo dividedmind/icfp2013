@@ -37,5 +37,17 @@ module BV
       
       classes.map {|x| BV::const_get(x.capitalize).generate size: size, operators: operators, closed: closed }.flatten
     end
+    
+    def <=> other
+      to_sexp.to_s <=> other.to_sexp.to_s
+    end
+
+    def hash
+      to_sexp.to_s.hash
+    end
+    
+    def eql? other
+      hash == other.hash
+    end
   end
 end
