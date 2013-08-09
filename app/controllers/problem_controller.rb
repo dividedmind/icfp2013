@@ -23,7 +23,7 @@ class ProblemController < ApplicationController
         render text: "Gone", status: 410
       else
         response = call_oracle
-        resp = JSON.parse response.body rescue {}
+        resp = JSON.parse(response.body) rescue {}
         if resp["status"] == "win"
           problem.update solved: true, solution: program
         elsif response.code == 412
