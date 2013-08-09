@@ -1,3 +1,7 @@
 development:
   adapter: postgres
   database: icfp-proxy
+
+test:
+  adapter: postgres
+  database: icfp-proxy-test
