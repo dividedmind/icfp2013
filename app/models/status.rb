@@ -85,7 +85,7 @@ class Status < Sequel::Model(:status)
   end
   
   def window_length
-    20
+    super || 20
   end
   
   def sent_request!
