@@ -29,7 +29,7 @@ module BV
         return memoized
       end
       
-      # STDERR.puts "Generating #{self.name} for size #{size} and ops #{operators.inspect}"
+      # STDERR.puts "Generating #{self.name} for #{params}"
       classes = []
       if size == 1
         classes += %i(zero one)

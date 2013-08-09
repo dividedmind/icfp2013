@@ -30,9 +30,9 @@ module BV
       (1..(size - 3)).map do |argsize|
         (1..(size - argsize - 2)).map do |accsize|
           exprsize = size - argsize - accsize - 1
-          Expression.generate(size: argsize, operators: operators).flatten.map do |arg|
-            Expression.generate(size: accsize, operators: operators).flatten.map do |acc|
-              Expression.generate(size: exprsize, operators: operators).flatten.map do |expr|
+          Expression.generate(size: argsize, operators: operators, closed: closed).flatten.map do |arg|
+            Expression.generate(size: accsize, operators: operators, closed: closed).flatten.map do |acc|
+              Expression.generate(size: exprsize, operators: operators, closed: closed).flatten.map do |expr|
                 new [arg, acc, expr]
               end
             end
