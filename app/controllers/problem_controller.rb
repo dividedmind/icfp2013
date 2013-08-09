@@ -9,9 +9,13 @@ class ProblemController < ApplicationController
     id = params[:id]
     program = params[:program]
     
+    
     params[:path] = "guess"
 
     problem = Problem[id]
+    
+    Rails.logger.info "Guessing #{id} (#{problem.inspect})"
+    
     if problem
       if problem.solved?
         render text: "Solved", status: 412
