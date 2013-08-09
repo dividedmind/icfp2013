@@ -5,6 +5,7 @@ IcfpProxy::Application.routes.draw do
   get '/status' => 'status#show'
   get '/myproblems' => 'problem#index'
   post '/guess' => 'problem#guess'
+  match '/train' => 'problem#train', via: [:get, :post]
   
   match '*path' => 'upstream#proxy', via: [:get, :post]
 

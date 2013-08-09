@@ -77,4 +77,19 @@ describe ProblemController do
       end
     end
   end
+
+  describe "POST train", proxy: true do
+    let(:invoke!) { post :train, '{"size": 3}', auth: 'testkey', size: 3 }
+    let(:path) { "train" }
+    let(:request_body) { '{"size": 3}' }
+    let(:body) { '{"id":"i3ttAniE5Yh5CIrwZcQAh35Ax8","size":3,"operators":["or"],"challenge":"(lambda (x) (or x x))"}' }
+    it "adds the problem to the db" do
+      invoke!
+      pm = Problem['i3ttAniE5Yh5CIrwZcQAh35Ax8']
+      pm.size.should == 3
+      pm.operators.should == %w(or)
+      pm.solution.should == "(lambda (x) (or x x))"
+      pm.kind.should == 'train'
+    end
+  end
 end

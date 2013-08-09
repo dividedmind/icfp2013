@@ -33,4 +33,16 @@ class ProblemController < ApplicationController
       proxy
     end
   end
+  
+  def train
+    params[:path] = "train"
+    response = call_oracle
+    begin
+      resp = JSON.parse response.body
+      Problem.create id: resp['id'], size: resp['size'], operators: resp['operators'], solution: resp['challenge'], kind: 'train'
+    rescue
+    end
+    
+    render_response response
+  end
 end
