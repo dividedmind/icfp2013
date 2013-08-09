@@ -6,7 +6,7 @@ module BV
       
       define_method(:index){ i }
       def to_sexp
-        index
+        @sexp ||= index
       end
       
       def eval context

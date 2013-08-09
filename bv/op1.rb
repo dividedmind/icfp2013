@@ -6,7 +6,7 @@ module BV
     end
     
     def to_sexp
-      [op, @arg.to_sexp]
+      @sexp ||= [op, @arg.to_sexp]
     end
     
     def eval context

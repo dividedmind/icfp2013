@@ -6,7 +6,7 @@ module BV
       
       define_method(:value){ n }
       def to_sexp
-        value
+        @sexp ||= value
       end
       
       def eval _

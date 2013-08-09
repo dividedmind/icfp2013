@@ -20,7 +20,7 @@ module BV
     end
 
     def to_sexp
-      [:fold, @arg.to_sexp, @acc.to_sexp, [:lambda, [:y, :z], @expr.to_sexp]]
+      @sexp ||= [:fold, @arg.to_sexp, @acc.to_sexp, [:lambda, [:y, :z], @expr.to_sexp]]
     end
     
     def eval context

@@ -10,7 +10,7 @@ module BV
     end
     
     def to_sexp
-      [op, @left.to_sexp, @right.to_sexp]
+      @sexp ||= [op, @left.to_sexp, @right.to_sexp]
     end
     
     def eval context

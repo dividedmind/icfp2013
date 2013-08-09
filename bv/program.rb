@@ -13,7 +13,7 @@ module BV
     attr_accessor :program
     
     def to_sexp
-      [:lambda, [:x], @program.to_sexp]
+      @sexp ||= [:lambda, [:x], @program.to_sexp]
     end
     
     def to_s

@@ -11,7 +11,7 @@ module BV
     end
     
     def to_sexp
-      [:if0, @condition.to_sexp, @when_zero.to_sexp, @else.to_sexp]
+      @sexp ||= [:if0, @condition.to_sexp, @when_zero.to_sexp, @else.to_sexp]
     end
     
     def operators
