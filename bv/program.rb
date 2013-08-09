@@ -42,6 +42,8 @@ module BV
         end
       end
       
+      exprs.reject!{|e| !e.has_x }
+      
       exprs.map {|e| Program.new e}
     end
   end

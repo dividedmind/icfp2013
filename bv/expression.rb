@@ -45,6 +45,10 @@ module BV
       @generated[params] = classes.map {|x| BV::const_get(x.capitalize).generate size: size, operators: operators, closed: closed }.flatten
     end
     
+    def has_x
+      to_sexp.flatten.include? :x
+    end
+    
     def <=> other
       to_sexp.to_s <=> other.to_sexp.to_s
     end
