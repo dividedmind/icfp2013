@@ -29,9 +29,20 @@ module BV
     
     def self.generate size: size, operators: operators
       operators = operators.sort.map &:to_sym
-      Expression.generate(size: size - 1, operators: operators.sort).flatten.
-        find_all {|e|e.operators == operators }.
-        map {|e| Program.new e}
+      tfold = false
+      if operators.include? :tfold
+        operators -= [:tfold]
+        size -= 4
+        tfold = :tfold
+      end
+      exprs = Expression.generate(size: size - 1, operators: operators.sort, closed: tfold).flatten.find_all {|e|e.operators.uniq == operators.uniq }
+      if tfold
+        exprs = exprs.map do |expr|
+          Fold.new [X.new, Zero.new, expr]
+        end
+      end
+      
+      exprs.map {|e| Program.new e}
     end
   end
 end

@@ -25,8 +25,9 @@ module BV
       STDERR.puts "Generating #{self.name} for size #{size} and ops #{operators.inspect}"
       classes = []
       if size == 1
-        classes += %i(zero one x)
+        classes += %i(zero one)
         classes += %i(y z) if closed
+        classes += %i(x) unless closed == :tfold
       else
         classes += Op1::OPS & operators if size > 1
         classes += Op2::OPS & operators if size > 2

@@ -1,6 +1,6 @@
 module BV
   class Fold < Expression
-    def initialize sexp, context = {x: :x, y: :y, z: z}
+    def initialize sexp, context = {x: :x, y: :y, z: :z}
       if sexp[0].is_a? Expression
         @arg, @acc, @expr = sexp
       else
