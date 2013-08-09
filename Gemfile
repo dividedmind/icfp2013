@@ -7,6 +7,8 @@ gem 'pg'
 gem 'sequel-rails'
 
 gem 'dotenv-rails', :groups => [:development, :test]
+gem 'addressable'
+gem 'rest-client'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
