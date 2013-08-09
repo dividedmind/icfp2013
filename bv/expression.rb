@@ -20,8 +20,15 @@ module BV
     def operators
       []
     end
+    
+    @generated = {}
   
     def self.generate size: size, operators: operators, closed: false
+      params = { size: size, operators: operators, closed: closed }
+      if memoized = @generated[params]
+        return memoized
+      end
+      
       STDERR.puts "Generating #{self.name} for size #{size} and ops #{operators.inspect}"
       classes = []
       if size == 1
@@ -35,7 +42,7 @@ module BV
         classes += [:fold] if size > 4 && !closed && (operators.include? :fold)
       end
       
-      classes.map {|x| BV::const_get(x.capitalize).generate size: size, operators: operators, closed: closed }.flatten
+      @generated[params] = classes.map {|x| BV::const_get(x.capitalize).generate size: size, operators: operators, closed: closed }.flatten
     end
     
     def <=> other
