@@ -53,5 +53,7 @@ IcfpProxy::Application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
+  root to: redirect('https://github.com/leastfixed/icfp2013-dividedmind/tree/proxy')
+  
   match '*path' => 'upstream#proxy', via: [:get, :post]
 end
