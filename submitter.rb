@@ -17,7 +17,7 @@ problems.each do |problem|
   p problem
   solutions = BV.generate size: problem['size'], operators: ops
   puts "%d solutions total." % solutions.length
-  next if solutions.length > 10000
+  next if solutions.length > 100000
   reqs = 0
   start_time = Time.now
   while solutions.length > 0
@@ -26,7 +26,7 @@ problems.each do |problem|
     program = sol.to_s
     puts program
     reqs += 1
-    result = JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/guess?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {id: problem["id"], program: program}.to_json)) rescue {}
+    result = JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/guess?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {id: problem["id"], program: program}.to_json))
     p result
     case result['status']
     when 'win'
@@ -38,5 +38,5 @@ problems.each do |problem|
     end
     raise "couldn't solve!!" if solutions.length < 1
   end
-  puts "Solved in %d requests (%s s)." % [reqs, Time.now - start_time]
+  puts "Solved in %d requests (%s s).\n" % [reqs, Time.now - start_time]
 end
