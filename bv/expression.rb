@@ -1,3 +1,5 @@
+require 'parallel'
+
 module BV
   class Expression
     def initialize sexp, context
@@ -42,7 +44,7 @@ module BV
         classes += [:fold] if size > 4 && !closed && (operators.include? :fold)
       end
       
-      @generated[params] = classes.map {|x| BV::const_get(x.capitalize).generate size: size, operators: operators, closed: closed }.flatten
+      @generated[params] = Parallel.map(classes, in_processes: [1, size - 8].max) {|x| BV::const_get(x.capitalize).generate size: size, operators: operators, closed: closed }.flatten
     end
     
     def has_x
