@@ -20,9 +20,8 @@ module BV
     def operators
       ([op] + @left.operators + @right.operators).sort
     end
-    
-    OPS = %i(and or xor plus)
-    
+  
+    OPS = [:and, :or, :xor, :plus]
     def self.generate(size: size, operators: operators, closed: closed)
       # STDERR.puts "Generating #{self.name} for size #{size} and ops #{operators.inspect}"
       size -= 1

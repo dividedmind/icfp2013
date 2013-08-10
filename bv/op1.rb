@@ -13,8 +13,7 @@ module BV
       @arg.eval(context).send op
     end
 
-    OPS = %i(not shl1 shr1 shr4 shr16)
-    
+    OPS = [:shl1, :shr1, :shr4, :shr16]
     def operators
       ([op] + @arg.operators).sort
     end

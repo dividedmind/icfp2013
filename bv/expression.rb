@@ -31,18 +31,18 @@ module BV
       
       # STDERR.puts "Generating #{self.name} for #{params}"
       classes = []
+
       if size == 1
-        classes += %i(zero one)
-        classes += %i(y z) if closed
-        classes += %i(x) unless closed == :tfold
+        classes += [:zero, :one]
+        classes += [:y, :z] if closed
+        classes += [:x] unless closed == :tfold
       else
         classes += Op1::OPS & operators if size > 1
         classes += Op2::OPS & operators if size > 2
         classes += [:if0] if size > 3 && (operators.include? :if0)
         classes += [:fold] if size > 4 && !closed && (operators.include? :fold)
       end
-      
-      @generated[params] = classes.map {|x| BV::const_get(x.capitalize).generate(size: size, operators: operators, closed: closed) }.flatten
+      @generated[params] = classes.map {|x| p BV::const_get(x.capitalize); BV::const_get(x.capitalize).generate(size: size, operators: operators, closed: closed) }.flatten
     end
     
     def has_x
