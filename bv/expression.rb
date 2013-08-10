@@ -42,7 +42,7 @@ module BV
         classes += [:if0] if size > 3 && (operators.include? :if0)
         classes += [:fold] if size > 4 && !closed && (operators.include? :fold)
       end
-      @generated[params] = classes.map {|x| p BV::const_get(x.capitalize); BV::const_get(x.capitalize).generate(size: size, operators: operators, closed: closed) }.flatten
+      @generated[params] = classes.map {|x| BV::const_get(x.capitalize).generate(size: size, operators: operators, closed: closed) }.flatten
     end
     
     def has_x
