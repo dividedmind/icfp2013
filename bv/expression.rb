@@ -23,7 +23,7 @@ module BV
     
     @generated = {}
   
-    def self.generate size: size, operators: operators, closed: false
+    def self.generate(size: size, operators: operators, closed: false)
       params = { size: size, operators: operators, closed: closed }
       if memoized = @generated[params]
         return memoized
@@ -42,7 +42,7 @@ module BV
         classes += [:fold] if size > 4 && !closed && (operators.include? :fold)
       end
       
-      @generated[params] = classes.map {|x| BV::const_get(x.capitalize).generate size: size, operators: operators, closed: closed }.flatten
+      @generated[params] = classes.map {|x| BV::const_get(x.capitalize).generate(size: size, operators: operators, closed: closed) }.flatten
     end
     
     def has_x

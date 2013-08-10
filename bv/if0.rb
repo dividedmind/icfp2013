@@ -26,7 +26,7 @@ module BV
       end
     end
     
-    def self.generate size: size, operators: operators, closed: closed
+    def self.generate(size: size, operators: operators, closed: closed)
       (1..(size - 3)).map do |argsize|
         (1..(size - argsize - 2)).map do |accsize|
           exprsize = size - argsize - accsize - 1

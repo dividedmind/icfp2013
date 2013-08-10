@@ -13,7 +13,7 @@ module BV
         value
       end
       
-      def self.generate size: size, **_
+      def self.generate(size: size, **_)
         if size == 1
           [new]
         else

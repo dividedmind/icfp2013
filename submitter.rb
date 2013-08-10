@@ -6,17 +6,18 @@ require 'bv'
 
 size = 10
 operators = []
-problems = JSON.parse RestClient.get('http://icfp2013lf.herokuapp.com/myproblems?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', nil)
-#problems = [JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/train?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {size: 42}.to_json))]
+# problems = JSON.parse RestClient.get('http://icfp2013lf.herokuapp.com/myproblems?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', nil)
+problems = [JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/train?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {size: 42}.to_json))]
 problems = problems.find_all {|a| a['size'] <= size && (!a['solved']) && (a['timeLeft'] || 42) > 0}
 #problems = [{"id"=>"3OVf2IsEAbkuaqElXg7Ax3je", "size"=>5, "operators"=>["or", "shl1"], "solved"=>false, "expires_at"=>nil, "solution"=>nil, "kind"=>"contest"}]
 #problems = [{"id"=>"2fx0Sizj7aDOX8cXKnqI1Adw", "size"=>8, "operators"=>["and", "not", "plus", "shr1"], "solved"=>false, "expires_at"=>nil, "solution"=>nil, "kind"=>"contest"}]
+puts "Got %d problems" % problems.size
 problems.each do |problem|
 begin
   ops = problem['operators']
   next unless operators.all?{|x| ops.include? ops}
   p problem
-  solutions = BV.generate size: problem['size'], operators: ops
+  solutions = BV.generate(size: problem['size'], operators: ops)
   puts "%d solutions total." % solutions.length
   next if solutions.length > 100000
   reqs = 0

@@ -27,7 +27,7 @@ module BV
       @program.eval x: value
     end
     
-    def self.generate size: size, operators: operators
+    def self.generate(size: size, operators: operators)
       operators -= [:bonus]
       operators = operators.sort.map &:to_sym
       tfold = false

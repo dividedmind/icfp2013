@@ -27,7 +27,7 @@ module BV
       @arg.eval(context).bytes.inject(@acc.eval context) { |acc, byte| @expr.eval context.merge(y: byte, z: acc) }
     end
     
-    def self.generate size: size, operators: operators, closed: false
+    def self.generate(size: size, operators: operators, closed: false)
       operators = operators - [:fold]
       (1..(size - 3)).map do |argsize|
         (1..(size - argsize - 2)).map do |accsize|
