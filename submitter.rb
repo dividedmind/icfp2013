@@ -4,14 +4,15 @@ require 'rest-client'
 $: << '.'
 require 'bv'
 
-size = 9
+size = 10
 operators = []
 problems = JSON.parse RestClient.get('http://icfp2013lf.herokuapp.com/myproblems?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', nil)
-#problems = [JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/train?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {size: size, operators: operators}.to_json))]
-problems = problems.find_all {|a| a['size'] == size && (!a['solved']) && (a['timeLeft'] || 42) > 0}
+#problems = [JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/train?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {size: 42}.to_json))]
+problems = problems.find_all {|a| a['size'] <= size && (!a['solved']) && (a['timeLeft'] || 42) > 0}
 #problems = [{"id"=>"3OVf2IsEAbkuaqElXg7Ax3je", "size"=>5, "operators"=>["or", "shl1"], "solved"=>false, "expires_at"=>nil, "solution"=>nil, "kind"=>"contest"}]
 #problems = [{"id"=>"2fx0Sizj7aDOX8cXKnqI1Adw", "size"=>8, "operators"=>["and", "not", "plus", "shr1"], "solved"=>false, "expires_at"=>nil, "solution"=>nil, "kind"=>"contest"}]
 problems.each do |problem|
+begin
   ops = problem['operators']
   next unless operators.all?{|x| ops.include? ops}
   p problem
@@ -39,4 +40,7 @@ problems.each do |problem|
     raise "couldn't solve!!" if solutions.length < 1
   end
   puts "Solved in %d requests (%s s).\n" % [reqs, Time.now - start_time]
+rescue Exception => e
+  puts e
+end
 end
