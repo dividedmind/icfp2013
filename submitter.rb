@@ -1,22 +1,34 @@
 #!/usr/bin/env ruby
 require 'json'
 require 'rest-client'
+require 'benchmark/nested'
+
+module Benchmark
+  class Tms
+    FMTSTR = FORMAT # fix for ruby 2.0
+  end
+end
+
 $: << '.'
 require 'bv'
 
-size = 10
+size = 9
 operators = []
-problems = JSON.parse RestClient.get('http://icfp2013lf.herokuapp.com/myproblems?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', nil)
-#problems = [JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/train?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {size: 42}.to_json))]
+#problems = JSON.parse RestClient.get('http://icfp2013lf.herokuapp.com/myproblems?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', nil)
+problems = [JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/train?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {size: size}.to_json))]
 problems = problems.find_all {|a| a['size'] <= size && (!a['solved']) && (a['timeLeft'] || 42) > 0}
 #problems = [{"id"=>"3OVf2IsEAbkuaqElXg7Ax3je", "size"=>5, "operators"=>["or", "shl1"], "solved"=>false, "expires_at"=>nil, "solution"=>nil, "kind"=>"contest"}]
 #problems = [{"id"=>"2fx0Sizj7aDOX8cXKnqI1Adw", "size"=>8, "operators"=>["and", "not", "plus", "shr1"], "solved"=>false, "expires_at"=>nil, "solution"=>nil, "kind"=>"contest"}]
 problems.each do |problem|
+benchmark "problem #{problem['id']}" do
 begin
   ops = problem['operators']
   next unless operators.all?{|x| ops.include? ops}
   p problem
-  solutions = BV.generate size: problem['size'], operators: ops
+  solutions = nil
+  benchmark "generation" do
+    solutions = BV.generate size: problem['size'], operators: ops
+  end
   puts "%d solutions total." % solutions.length
   next if solutions.length > 100000
   reqs = 0
@@ -33,7 +45,9 @@ begin
     when 'win'
       break
     when 'mismatch'
-      solutions.reject! {|s| s.eval(Integer(result['values'][0])) != Integer(result['values'][1])}
+      benchmark "pruning" do
+        solutions.reject! {|s| s.eval(Integer(result['values'][0])) != Integer(result['values'][1])}
+      end
     else
       raise "unknown response: #{result}"
     end
@@ -43,4 +57,11 @@ begin
 rescue Exception => e
   puts e
 end
+end
+end
+
+puts Benchmark::CAPTION # Just for some headers
+NestedBenchmark.each do |benchmark|
+  # Note these are the toplevel benchmarks
+  puts benchmark
 end
