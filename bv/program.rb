@@ -28,6 +28,7 @@ module BV
     end
     
     def self.generate size: size, operators: operators
+      operators -= [:bonus]
       operators = operators.sort.map &:to_sym
       tfold = false
       if operators.include? :tfold
