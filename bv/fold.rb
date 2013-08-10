@@ -29,13 +29,13 @@ module BV
     
     def self.generate size: size, operators: operators, closed: false
       operators = operators - [:fold]
-      (1..(size - 3)).map do |argsize|
-        (1..(size - argsize - 2)).map do |accsize|
-          exprsize = size - argsize - accsize - 1
+      (1..(size - 4)).map do |argsize|
+        (1..(size - argsize - 3)).map do |accsize|
+          exprsize = size - argsize - accsize - 2
           Expression.generate(size: argsize, operators: operators).flatten.map do |arg|
             Expression.generate(size: accsize, operators: operators).flatten.map do |acc|
               Expression.generate(size: exprsize, operators: operators, closed: true).flatten.map do |expr|
-                new arg, acc, expr
+                new [arg, acc, expr]
               end
             end
           end
