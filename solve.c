@@ -6,9 +6,8 @@
 
 int main(int argc, char **argv)
 {
-  bv_problem prob;
-  prob.size = 6;
-  prob.ops = 0x2000;
+  bv_problem prob = get_training_problem(6);
+  printf("%x %lx\n", prob.size, prob.ops);
   
   if (prob.ops >= BV_FOLD_MASK) {
     puts("can't handle folds yet");
