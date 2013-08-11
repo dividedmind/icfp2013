@@ -27,7 +27,7 @@ module BV
         params[:operators] = params[:operators] - [:shr1]
       end
 
-      if self.name == "BV:Shr16"
+      if self.name == "BV::Shr16"
         params[:operators] = params[:operators] - [:shr4,:shr1]
       end
 

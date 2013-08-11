@@ -34,8 +34,20 @@ module BV
           exprsize = size - argsize - accsize - 2
           Expression.generate(size: argsize, operators: operators).flatten.map do |arg|
             Expression.generate(size: accsize, operators: operators).flatten.map do |acc|
-              Expression.generate(size: exprsize, operators: operators, closed: true).flatten.map do |expr|
-                new [arg, acc, expr]
+              Expression.generate(size: exprsize, operators: operators, closed: true).flatten.uniq.map do |expr|
+                if [0,1].include? expr.to_sexp
+                  expr
+                elsif expr.to_sexp == :x
+                  expr
+                elsif expr.to_sexp == :z
+                  acc
+                elsif expr.to_sexp == :y
+                  new [arg, BV::Zero.new(), expr]
+                elsif (expr.to_sexp.flatten.uniq & [:y, :z]).size == 0
+                  expr
+                else
+                  new [arg, acc, expr]
+                end
               end
             end
           end

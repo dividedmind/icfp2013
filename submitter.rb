@@ -69,9 +69,15 @@ threads = []
         while solutions.length > 0
           puts "%d solutions left." % solutions.length
           if mismatched.size > 0
+            timebox_start = Time.now
             solutions = solutions.drop_while do |s|
-              mismatched.any? do |m|
-                s.eval(Integer(m[0])) != Integer(m[1])
+              if (Time.now - timebox_start) < 4
+                mismatched.any? do |m|
+                  s.eval(Integer(m[0])) != Integer(m[1])
+                end
+              else
+                solutions.shuffle!
+                false
               end
             end
           end
