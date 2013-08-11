@@ -55,4 +55,9 @@ typedef struct {
   char id[32];
 } bv_problem;
 
+typedef struct {
+  uint64_t input;
+  uint64_t output;
+} bv_example;
+
 #endif

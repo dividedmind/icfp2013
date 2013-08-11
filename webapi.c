@@ -141,9 +141,33 @@ bv_problem get_training_problem(int _size)
   return prob;
 }
 
-void guess_solution(bv_problem problem, bv_expr solution)
+char guess_solution(bv_problem problem, bv_expr solution, bv_example *ex)
 {
   char sendbuf[1024];
   snprintf(sendbuf, 1024, "{\"id\": \"%s\", \"program\": \"%s\"}", problem.id, bv_print_program(solution));
-  post("guess", sendbuf);
+  if (!post("guess", sendbuf))
+    return -3;
+  
+  json_object *spec, *status, *values;
+
+  if (!(spec = json_tokener_parse(BUF))) return -1;
+  
+  int result = -2;
+  
+  if (!json_object_object_get_ex(spec, "status", &status)) goto end;
+
+  const char * status_t = json_object_get_string(status);
+  if (strcmp(status_t, "mismatch") == 0) {
+    if (ex) {
+      if (!json_object_object_get_ex(spec, "values", &values)) goto end;
+      ex->input = strtoull(json_object_get_string(json_object_array_get_idx(values, 0)), NULL, 16);
+      ex->output = strtoull(json_object_get_string(json_object_array_get_idx(values, 1)), NULL, 16);
+    }
+    result = 1;
+  } else if (strcmp(status_t, "win") == 0)
+    result = 0;
+  
+  end:
+  json_object_put(spec);
+  return result;
 }

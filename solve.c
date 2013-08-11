@@ -15,7 +15,9 @@ int main(int argc, char **argv)
   }
   
   bv_expr sol = gen_solution(prob);
-  guess_solution(prob, sol);
+  bv_example ex;
+  if (guess_solution(prob, sol, &ex) > 0)
+    printf("Counterexample: %lx -> %lx\n", ex.input, ex.output);
   
   return 0;
 }
