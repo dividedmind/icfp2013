@@ -37,7 +37,7 @@ static int download_problem(int size)
   if(curl) {
     curl_easy_setopt(curl, CURLOPT_URL, "http://icfp2013lf.herokuapp.com/train?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H");
     char * request;
-    if (asprintf(&request, "{\"size\": %d}", size) == -1) {
+    if (asprintf(&request, "{\"size\": %d, \"operators\": []}", size) == -1) {
       puts("error asprintfing");
       return -1;
     }
