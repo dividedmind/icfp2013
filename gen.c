@@ -40,21 +40,25 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
   bv_expr sol;
   
   for(;;) {
-    sol.size = 0;
+    bv_mask allowed = allowed_ops;
+    
     sol.code = 0;
-    
-    while (sol.size < problem.size) {
+    sol.size = problem.size;
+    int size_left = problem.size;
+    while (size_left) {
       char op = rand() & 0xf;
-      if (!((1 << op) & allowed_ops)) continue;
-      sol.code = (sol.code << 4) | op;
-      sol.size++;
+      bv_mask mask = 1 << op;
+      if (!(mask & allowed))
+        continue;
+      if (size_left < 2 && (mask & BV_SIZE2_MASK))
+        continue;
+      if (size_left < 3 && (mask & BV_SIZE3_MASK))
+        continue;
+      if (size_left < 4 && (mask & BV_SIZE4_MASK))
+        continue;
+      sol.code |= op << ((problem.size - size_left) * 4);
+      size_left--;
     }
-    
-    if((sol.code & 0xf) < BV_NOT) continue;
-    
-     // puts(bv_print_program(sol));
-
-    if (check_ops(sol, allowed_ops, needed_ops)) continue;
     
     if (tfold) {
       sol.code = (sol.code << 12) | 0x02f; // fold x 0
