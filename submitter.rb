@@ -36,17 +36,19 @@ threads = []
       solutions = BV.generate(size: problem['size'], operators: ops)
       puts "%d solutions total." % solutions.length
       classes = solutions.group_by{ |s| start_inputs.map{|x| s.eval(Integer(x))}}
-      result = JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/eval?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {id: problem["id"], arguments: start_inputs}.to_json))
-      clss = result['outputs'].map{|x|Integer(x)}
-      # result = nil
-      p classes[clss].size
-      solutions = classes[clss]
-
-      next if solutions.length > 100000
-      reqs = 0
-      solutions.shuffle!
       mutex.synchronize do
         start_time = Time.now
+        result = JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/eval?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {id: problem["id"], arguments: start_inputs}.to_json))
+        clss = result['outputs'].map{|x|Integer(x)}
+        # result = nil
+        p classes[clss].size
+        solutions = classes[clss]
+
+        # next if solutions.length > 100000
+        reqs = 0
+        solutions.shuffle!
+
+
         
         mismatched = []
         while solutions.length > 0
