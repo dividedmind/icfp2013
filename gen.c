@@ -108,7 +108,7 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
     
     if (excount == 0 && !bv_eval_program(sol, 10, NULL)) continue;
 
-    printf("Tries: %d\r", total++);
+    fprintf(stderr, "Tries: %d\r", total++);
     
     char ok = 1;
     for (unsigned int i = 0; i < excount; i++) {
