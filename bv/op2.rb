@@ -63,7 +63,7 @@ module BV
                 elsif self.name == "BV::Xor"
                   BV::Not.new(right)
                 else
-                  new l
+                  new [left,right]
                 end
               elsif right.class.name == "BV::Not" and right.arg.class.name == "BV::Zero"
                 if self.name == "BV::And"
