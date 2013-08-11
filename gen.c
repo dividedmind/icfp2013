@@ -40,12 +40,17 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
   bv_expr sol;
   
   for(;;) {
-    bv_mask allowed = allowed_ops;
+    bv_mask allowed;
+    start:
+    allowed = allowed_ops;
     
     sol.code = 0;
     sol.size = problem.size;
     int size_left = problem.size;
+    int depth = 1;
     while (size_left) {
+      if (depth < 1)
+        goto start;
       int op = rand() & 0xf;
       bv_mask mask = 1ull << op;
       if (!(mask & allowed))
@@ -58,6 +63,28 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
         continue;
       sol.code |= 1ull * op << ((problem.size - size_left) * 4);
       size_left--;
+      switch(op) {
+        case BV_0:
+        case BV_1:
+        case BV_X:
+        case BV_Y:
+        case BV_Z:
+          depth--;
+        case BV_NOT:
+        case BV_SHL1:
+        case BV_SHR1:
+        case BV_SHR4:
+        case BV_SHR16:
+          break;
+        case BV_IF0:
+        case BV_FOLD:
+          depth++;
+        case BV_AND:
+        case BV_OR:
+        case BV_XOR:
+        case BV_PLUS:
+          depth++;
+      };
     }
     
     if (tfold) {
