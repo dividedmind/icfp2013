@@ -1,6 +1,7 @@
 module BV
   class Op1 < Expression
     def initialize sexp, context = {}
+      p sexp
       sexp = Expression.parse sexp[0], context unless sexp.is_a?(Expression)
       @arg = sexp
     end
@@ -13,7 +14,7 @@ module BV
       @arg.eval(context).send op
     end
 
-    OPS = [:shl1, :shr1, :shr4, :shr16]
+    OPS = [:not, :shl1, :shr1, :shr4, :shr16]
     def operators
       ([op] + @arg.operators).sort
     end
