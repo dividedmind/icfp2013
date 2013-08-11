@@ -12,6 +12,7 @@ uint64_t bv_eval(bv_expr *prog, uint64_t x)
   int size = prog->size;
   
   while (size > 0) {
+    if (top < -1) goto bad;
     char op = (prog->code >> ((size - 1) * 4)) & 0xf;
     size--;
     
