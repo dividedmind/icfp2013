@@ -4,7 +4,7 @@
  * eats used bytes from bv_code
  * sets size to -1 if it's bad
  */
-int16_t bv_eval(bv_expr *prog, uint64_t x, uint64_t y, uint64_t z)
+uint64_t bv_eval(bv_expr *prog, uint64_t x, uint64_t y, uint64_t z)
 {
   if (prog->size < 1) goto bad;
   
@@ -66,4 +66,15 @@ int16_t bv_eval(bv_expr *prog, uint64_t x, uint64_t y, uint64_t z)
       prog->size = -1;
       return 0;
   };
+}
+
+char bv_eval_program(bv_expr prog, uint64_t arg, uint64_t *result)
+{
+  int start_size = prog.size;
+  
+  uint64_t res = bv_eval(&prog, arg, 0, 0);
+  
+  if (prog.size == -1) return 0;
+  
+  return start_size - prog.size;
 }
