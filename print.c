@@ -107,7 +107,6 @@ char * bv_print(bv_expr *expr, char * buf)
       *(buf++) = ')';
       return buf;
     case BV_FOLD:
-      expr->size--;
       memcpy(buf, "(fold ", 6);
       buf = bv_print(expr, buf + 6);
       if (buf == NULL) goto bad;
@@ -115,9 +114,10 @@ char * bv_print(bv_expr *expr, char * buf)
       buf = bv_print(expr, buf);
       if (buf == NULL) goto bad;
       *(buf++) = ' ';
-      memcpy(buf, " (lambda y z) ", 14);
+      memcpy(buf, "(lambda (y z) ", 14);
       buf = bv_print(expr, buf + 14);
       if (buf == NULL) goto bad;
+      *(buf++) = ')';
       *(buf++) = ')';
       return buf;
     default:

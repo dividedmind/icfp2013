@@ -46,6 +46,7 @@ typedef struct {
 
 #define BV_OPS_MASK 0xffe0 // only plain ops
 #define BV_BASE_MASK 0x7 // constants + x
+#define BV_BASET_MASK 0x1b // constants + yz
 
 typedef int64_t bv_mask;
 

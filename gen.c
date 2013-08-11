@@ -24,9 +24,18 @@ static char check_ops(bv_expr expr, bv_mask allowed, bv_mask needed)
 bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
 {
   problem.size--;
+  char tfold = (problem.ops & BV_TFOLD_MASK) > 0;
   
-  bv_mask allowed_ops = (problem.ops & BV_OPS_MASK) | BV_BASE_MASK;
-  bv_mask needed_ops = (problem.ops & BV_OPS_MASK) | BV_X_MASK;
+  bv_mask allowed_ops, needed_ops;
+  
+  if (tfold) {
+    allowed_ops = (problem.ops & BV_OPS_MASK) | BV_BASET_MASK;
+    needed_ops = (problem.ops & BV_OPS_MASK);
+    problem.size -= 4;
+  } else {
+    allowed_ops = (problem.ops & BV_OPS_MASK) | BV_BASE_MASK;
+    needed_ops = (problem.ops & BV_OPS_MASK) | BV_X_MASK;
+  }
 
   bv_expr sol;
   
@@ -42,8 +51,14 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
     }
     
     if (check_ops(sol, allowed_ops, needed_ops)) continue;
-    if (!bv_eval_program(sol, 0, NULL)) continue;
     
+    if (tfold) {
+      sol.code = (sol.code << 12) | 0x02f; // fold x 0
+      sol.size += 3;
+    }
+    
+    if (!bv_eval_program(sol, 10, NULL)) continue;
+
     char ok = 1;
     for (unsigned int i = 0; i < excount; i++) {
       uint64_t result;
