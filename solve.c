@@ -33,23 +33,42 @@ static int solve_problem(bv_problem prob)
   return ret;
 }
 
+static void usage()
+{
+  puts("Usage: solve [-a] [size]\n"
+  "\t-a -- automatically solve available problems\n"
+  "\tsize -- max size or size of training problem\n\n"
+  "Without arguments reads JSON problem spec from stdin.");
+  exit(10);
+}
+
 int main(int argc, char **argv)
 {
   srand(time(NULL));
 
   if (argc == 2) {
     int size = atoi(argv[1]);
+    if (size) {
+      if (solve_problem(get_training_problem(size)))
+        exit(1);
+    } else
+      usage();
+  } else if (argc == 3) {
+    if (strcmp(argv[1], "-a") != 0) 
+      usage();
+    int size = atoi(argv[2]);
     if (size)
-      solve_problem(get_training_problem(size));
-    else if (strcmp(argv[1], "auto") == 0) {
-    }
+      ;//autosolve(size);
+    else
+      usage();
   } else {
     puts("Enter a problem: ");
     char BUF[1024];
-    if (!fgets(BUF, 1024, stdin))
+    if (!fgets(BUF, 1024, stdin)) {
       puts("Error reading problem!");
-    else
-      solve_problem(parse_problem(BUF));
+      exit(11);
+    } else if(solve_problem(parse_problem(BUF)))
+      exit(1);
   }
   
   return 0;
