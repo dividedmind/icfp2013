@@ -10,11 +10,15 @@
 #define MAX_EXAMPLES 1024
 
 // retuns zero im solved
+// negative on error
+// positive on couldn't solve
 static int solve_problem(bv_problem prob)
 {
   if (prob.size == 0)
     return -20;
   
+  printf("Problem %s, size %d, ops 0x%lx\n", prob.id, prob.size, prob.ops);
+
   bv_example examples[MAX_EXAMPLES];
   int excount = 0;
   int ret = -10;
@@ -42,6 +46,24 @@ static void usage()
   exit(10);
 }
 
+// zero == all ok
+int autosolve(int max_size)
+{
+  bv_problem * problems = get_myproblems(1);
+  if (!problems) return -2;
+  
+  for (bv_problem * prob = problems; prob->size <= max_size && prob->size != 0; prob++) {
+    if (prob->ops & BV_FOLD_MASK)
+      continue;
+    
+    int res;
+    if ((res = solve_problem(*prob)) > 0)
+      return res;
+  }
+  
+  return 0;
+}
+
 int main(int argc, char **argv)
 {
   srand(time(NULL));
@@ -58,7 +80,7 @@ int main(int argc, char **argv)
       usage();
     int size = atoi(argv[2]);
     if (size)
-      ;//autosolve(size);
+      return autosolve(size);
     else
       usage();
   } else {

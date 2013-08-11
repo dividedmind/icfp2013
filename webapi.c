@@ -9,7 +9,7 @@
 #include "webapi.h"
 #include "print.h"
 
-#define BUFSIZE 1024
+#define BUFSIZE 2000000
 static char BUF[BUFSIZE];
 static char *buf;
 
@@ -106,35 +106,48 @@ static bv_mask mask_of_op(const char * op)
   return -1;
 }
 
-bv_problem parse_problem(const char * json)
+bv_problem convert_problem(json_object *spec)
 {
-  json_object *spec, *id, *size, *ops;
-
-  if (!(spec = json_tokener_parse(json))) goto bad;
-  if (!json_object_object_get_ex(spec, "id", &id)) goto bad;
-  if (!json_object_object_get_ex(spec, "size", &size)) goto bad;
-  if (!json_object_object_get_ex(spec, "operators", &ops)) goto bad;
-  
   bv_problem prob;
+  prob.size = 0;
+  
+  json_object *id, *size, *ops;
+  
+  if (!json_object_object_get_ex(spec, "id", &id)) goto end;
+  if (!json_object_object_get_ex(spec, "size", &size)) goto end;
+  if (!json_object_object_get_ex(spec, "operators", &ops)) goto end;
   
   size_t idlen = json_object_get_string_len(id);
-  if (idlen + 1 > sizeof(prob.id)) goto bad;
+  if (idlen + 1 > sizeof(prob.id)) goto end;
   memcpy(prob.id, json_object_get_string(id), idlen);
   prob.id[idlen] = 0;
   
-  prob.size = json_object_get_int(size);
-
   prob.ops = 0;
   int opsct = json_object_array_length(ops);
   for (int i = 0; i < opsct; ++i)
     prob.ops |= mask_of_op(json_object_get_string(json_object_array_get_idx(ops, i)));
   
-  json_object_put(spec);
+  prob.size = json_object_get_int(size);
+
+  end:
   return prob;
-  
-  bad:
-  puts("bad problem");
+}
+
+bv_problem parse_problem(const char * json)
+{
+  json_object *spec;
+  bv_problem prob;
   prob.size = 0;
+
+  if (!(spec = json_tokener_parse(json))) goto end;
+
+  prob = convert_problem(spec);
+
+  json_object_put(spec);
+  
+  end:
+  if (prob.size == 0)
+    puts("bad problem");
   return prob;
 }
 
@@ -176,4 +189,50 @@ char guess_solution(bv_problem problem, bv_expr solution, bv_example *ex)
   end:
   json_object_put(spec);
   return result;
+}
+
+static int problem_cmp(const void *_a, const void *_b)
+{
+  bv_problem *a = (bv_problem *) _a, *b = (bv_problem *) _b;
+  return a->size - b->size;
+}
+
+bv_problem * get_myproblems(int only_unsolved)
+{
+  if (!post("myproblems", ""))
+    return NULL;
+  
+  json_object *myproblems = json_tokener_parse(BUF);
+  if (!myproblems)
+    return NULL;
+  
+  unsigned int count = json_object_array_length(myproblems);
+  
+  bv_problem * problems = calloc(count + 1, sizeof(bv_problem));
+  
+  if (!problems)
+    goto end_tok;
+  
+  bv_problem *prob = problems;
+  
+  for (unsigned int i = 0; i < count; i++) {
+    json_object *problem = json_object_array_get_idx(myproblems, i);
+    
+    json_object *elem;
+    if (only_unsolved) {
+      if (json_object_object_get_ex(problem, "solved", &elem) && json_object_get_boolean(elem))
+        continue;
+      if (json_object_object_get_ex(problem, "timeLeft", &elem) && !json_object_get_boolean(elem))
+        continue;
+    }
+    *(prob++) = convert_problem(problem);
+  }
+  
+  prob->size = 0;
+  
+  qsort(problems, prob - problems, sizeof(bv_problem), problem_cmp);
+  
+  end_tok:
+  json_object_put(myproblems);
+  return problems;
 }
