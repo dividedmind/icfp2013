@@ -7,9 +7,13 @@ require 'bv'
 require 'thread'
 require 'peach'
 
+start_inputs = (1..64).map{|x| [x, 2**(x-1), 2**(x-1)-1]}.flatten
+start_inputs += (1..32).map{|x| [(2**(x-1))^((1<<64)-1), 2**(x-1)+2**(x/2)]}.flatten
+start_inputs += [0,257,263,269,271,277,281,283,787,7151,65537,602257,5534429,50859013,467373287,4294967311,39468974959,362703572713,3333095978617]
+start_inputs = start_inputs.uniq.sort.map{|x|"0x%016x" % x}
+
 threads_num = 16
 size = 13
-operators = []
 problems = JSON.parse RestClient.get('http://icfp2013lf.herokuapp.com/myproblems?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', nil)
 # problems = [JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/train?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {size: 11}.to_json))]
 # problems = [JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/train?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', nil))]
@@ -31,8 +35,16 @@ threads = []
       p problem
       solutions = BV.generate(size: problem['size'], operators: ops)
       puts "%d solutions total." % solutions.length
-      next if solutions.length > 1000000
+      classes = solutions.group_by{ |s| start_inputs.map{|x| s.eval(Integer(x))}}
+      result = JSON.parse(RestClient.post('http://icfp2013lf.herokuapp.com/eval?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H', {id: problem["id"], arguments: start_inputs}.to_json))
+      clss = result['outputs'].map{|x|Integer(x)}
+      # result = nil
+      p classes[clss].size
+      solutions = classes[clss]
+
+      next if solutions.length > 100000
       reqs = 0
+      solutions.shuffle!
       mutex.synchronize do
         start_time = Time.now
         
