@@ -37,7 +37,7 @@ static int solve_problem(bv_problem prob)
     bv_expr sol = gen_solution(prob, examples, excount);
     if ((ret = guess_solution(prob, sol, examples + excount)) > 0)
       excount++;
-    else
+    else if (ret != -42) // try again on "error"
       break;
   }
   

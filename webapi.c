@@ -64,7 +64,7 @@ char * post(char * path, char * payload)
 static int download_problem(int size)
 {
   char * request;
-  if (asprintf(&request, "{\"size\": %d, \"operators\": [\"fold\"] }", size) == -1) {
+  if (asprintf(&request, "{\"size\": %d }", size) == -1) {
     puts("error asprintfing");
     return -1;
   }
@@ -185,6 +185,8 @@ char guess_solution(bv_problem problem, bv_expr solution, bv_example *ex)
     result = 1;
   } else if (strcmp(status_t, "win") == 0)
     result = 0;
+  else if (strcmp(status_t, "error") == 0)
+    result = -42;
   
   end:
   json_object_put(spec);
