@@ -64,7 +64,7 @@ char * post(char * path, char * payload)
 static int download_problem(int size)
 {
   char * request;
-  if (asprintf(&request, "{\"size\": %d }", size) == -1) {
+  if (asprintf(&request, "{\"size\": %d, \"operators\": [\"fold\"] }", size) == -1) {
     puts("error asprintfing");
     return -1;
   }

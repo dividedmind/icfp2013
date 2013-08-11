@@ -25,6 +25,8 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
 {
   problem.size--;
   char tfold = (problem.ops & BV_TFOLD_MASK) > 0;
+  if ((problem.ops & BV_FOLD_MASK) > 0)
+    problem.size--;
   
   bv_mask allowed_ops, needed_ops;
   
@@ -39,6 +41,7 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
 
   bv_expr sol;
   
+  int total = 0;
   for(;;) {
     bv_mask allowed;
     start:
@@ -48,6 +51,7 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
     sol.size = problem.size;
     int size_left = problem.size;
     int depth = 1;
+    int zdepth = -3, foldtrips = 0;
     while (size_left) {
       if (depth < 1)
         goto start;
@@ -63,6 +67,10 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
         continue;
       sol.code |= 1ull * op << ((problem.size - size_left) * 4);
       size_left--;
+      if (op == BV_FOLD) {
+        allowed &= ~BV_FOLD_MASK;
+        zdepth = depth;
+      }
       switch(op) {
         case BV_0:
         case BV_1:
@@ -85,6 +93,12 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
         case BV_PLUS:
           depth++;
       };
+      if (depth == zdepth)
+        allowed |= BV_Z_MASK | BV_Y_MASK;
+      if (depth < zdepth) {
+        allowed &= ~(BV_Z_MASK | BV_Y_MASK);
+        zdepth = -3;
+      }
     }
     
     if (tfold) {
@@ -94,6 +108,8 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
     
     if (excount == 0 && !bv_eval_program(sol, 10, NULL)) continue;
 
+    printf("Tries: %d\r", total++);
+    
     char ok = 1;
     for (unsigned int i = 0; i < excount; i++) {
       uint64_t result;
