@@ -10,7 +10,18 @@ int main(int argc, char **argv)
 {
   srand(time(NULL));
 
-  bv_problem prob = get_training_problem(15);
+  int size = 10;
+  if (argc == 2)
+    size = atoi(argv[1]);
+  
+  bv_problem prob;
+  if (size) 
+    prob = get_training_problem(size);
+  else {
+    char BUF[1024];
+    gets(BUF);
+    prob = parse_problem(BUF);
+  }
   printf("%x %lx\n", prob.size, prob.ops);
   
   bv_example examples[1024];

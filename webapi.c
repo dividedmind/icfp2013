@@ -106,13 +106,11 @@ static bv_mask mask_of_op(const char * op)
   return -1;
 }
 
-bv_problem get_training_problem(int _size)
+bv_problem parse_problem(const char * json)
 {
-  if (download_problem(_size) != 0) goto bad;
-  
   json_object *spec, *id, *size, *ops;
 
-  if (!(spec = json_tokener_parse(BUF))) goto bad;
+  if (!(spec = json_tokener_parse(json))) goto bad;
   if (!json_object_object_get_ex(spec, "id", &id)) goto bad;
   if (!json_object_object_get_ex(spec, "size", &size)) goto bad;
   if (!json_object_object_get_ex(spec, "operators", &ops)) goto bad;
@@ -138,6 +136,15 @@ bv_problem get_training_problem(int _size)
   puts("bad problem");
   prob.size = 0;
   return prob;
+}
+
+bv_problem get_training_problem(int _size)
+{
+  bv_problem prob;
+  prob.size = 0;
+  
+  if (download_problem(_size) != 0) return prob;
+  return parse_problem(BUF);
 }
 
 char guess_solution(bv_problem problem, bv_expr solution, bv_example *ex)
