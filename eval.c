@@ -27,13 +27,9 @@ uint64_t bv_eval(bv_expr *prog, uint64_t x)
         stack[++top] = x;
         continue;
       case BV_Y:
-        if (folditer < 1 || folditer >= 8)
-          goto bad;
         stack[++top] = y;
         continue;
       case BV_Z:
-        if (folditer < 1 || folditer >= 8)
-          goto bad;
         stack[++top] = z;
         continue;
       case BV_NOT:
