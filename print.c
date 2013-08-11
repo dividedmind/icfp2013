@@ -130,8 +130,6 @@ char * bv_print_program(bv_expr prog)
 {
   static char buf[1024] = "(lambda (x) ";
   
-  prog.size--;
-  
   char * fin = bv_print(&prog, buf + 12);
   if (fin == NULL) return "bad program";
   

@@ -23,6 +23,8 @@ static char check_ops(bv_expr expr, bv_mask allowed, bv_mask needed)
 
 bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
 {
+  problem.size--;
+  
   bv_mask allowed_ops = (problem.ops & BV_OPS_MASK) | BV_BASE_MASK;
   bv_mask needed_ops = (problem.ops & BV_OPS_MASK) | BV_X_MASK;
 
@@ -32,22 +34,18 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
     sol.size = 0;
     sol.code = 0;
     
-    while (sol.size < problem.size - 1) {
+    while (sol.size < problem.size) {
       char op = rand() & 0xf;
       if (!((1 << op) & allowed_ops)) continue;
       sol.code = (sol.code << 4) | op;
       sol.size++;
     }
     
-    if ((sol.size = bv_eval_program(sol, 0, NULL)) == 0) continue;
+    if (bv_eval_program(sol, 0, NULL) != sol.size) continue;
     if (check_ops(sol, allowed_ops, needed_ops)) continue;
     
-    sol.size++;
-
-//    puts(bv_print_program(sol));
-    
     char ok = 1;
-    for (int i = 0; i < excount; i++) {
+    for (unsigned int i = 0; i < excount; i++) {
       uint64_t result;
       bv_eval_program(sol, examples[i].input, &result);
       if (result != examples[i].output) {

@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 {
   srand(time(NULL));
 
-  bv_problem prob = get_training_problem(10);
+  bv_problem prob = get_training_problem(8);
   printf("%x %lx\n", prob.size, prob.ops);
   
   bv_example examples[1024];
