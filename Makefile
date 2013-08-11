@@ -1,3 +1,9 @@
 CFLAGS += -std=c99 -W -Wall
 
-eval: main.o eval.o print.o
+solve: main.o eval.o print.o
+
+.PHONY: clean
+
+clean:
+	rm -f *.o
+	rm -f solve
