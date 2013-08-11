@@ -76,5 +76,7 @@ char bv_eval_program(bv_expr prog, uint64_t arg, uint64_t *result)
   
   if (prog.size == -1) return 0;
   
+  if (result) *result = res;
+  
   return start_size - prog.size;
 }
