@@ -89,7 +89,7 @@ static __int128 random_mask()
 
 void reproduce(population_t *pop)
 {
-  const int REP_COUNT = POP_SIZE >> 4;
+  const int REP_COUNT = POP_SIZE >> 2;
   genotype_t newones[REP_COUNT];
   
 #pragma omp parallel for
@@ -113,10 +113,12 @@ void reproduce(population_t *pop)
   qsort(pop->members, POP_SIZE, sizeof(genotype_t), score_cmp);
 }
 
-void evolve_population(population_t *population, bv_example example)
+void evolve_population(population_t *population, bv_example *example)
 {
-  population->examples[population->example_count++] = example;
+  if (example)
+    population->examples[population->example_count++] = *example;
   score_population(population);
+  population->members[0].score = 1 << 16;
   
   qsort(population->members, POP_SIZE, sizeof(genotype_t), score_cmp);
   int generations = 0;

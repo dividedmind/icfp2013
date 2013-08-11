@@ -37,9 +37,11 @@ static int solve_problem(bv_problem prob)
     bv_expr sol = get_best(population);
     bv_example ex;
     if ((ret = guess_solution(prob, sol, &ex)) > 0)
-      evolve_population(population, ex);
+      evolve_population(population, &ex);
     else if (ret != -42) // try again on "error"
       break;
+    else
+      evolve_population(population, NULL); // reshuffle
   }
   
   printf("%ld seconds.\n\n", time(NULL) - start_time);

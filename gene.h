@@ -8,7 +8,7 @@ typedef struct {
   int64_t score;
 } genotype_t;
 
-#define POP_SIZE 1024
+#define POP_SIZE 8096
 #define ENV_SIZE 1024
 
 typedef struct {
@@ -19,7 +19,7 @@ typedef struct {
 
 // free normally
 population_t *make_population(bv_problem problem);
-void evolve_population(population_t *population, bv_example example);
+void evolve_population(population_t *population, bv_example *example);
 bv_expr get_best(population_t *population);
 
 #endif
