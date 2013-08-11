@@ -31,12 +31,104 @@ module BV
           rights = Expression.generate(size: (size - lsize), operators: operators, closed: closed).flatten
           lefts.map do |left|
             rights.map do |right|
-              new [left, right]
+              if left.class.name == "BV::Zero" and ["BV::Plus", "BV::Or", "BV::Xor"].include?(self.name)
+                right
+              elsif left.class.name == "BV::Zero" and ["BV::And"].include?(self.name)
+                # puts 'ERASING'
+                left
+              elsif right.class.name == "BV::Zero" and ["BV::Plus", "BV::Or", "BV::Xor"].include?(self.name)
+                left
+              elsif right.class.name == "BV::Zero" and ["BV::And"].include?(self.name)
+                right
+              elsif left == right and ["BV::Plus"].include?(self.name) and operators.include?(:shl1)
+                BV::Shr1.new(left)
+              elsif left == right and ["BV::And", "BV::Or"].include?(self.name)
+                left
+              elsif left == right and ["BV::Xor"].include?(self.name)
+                BV::Zero.new()
+              elsif (left.class.name == "BV::Not" and left.arg == right) or (right.class.name == "BV::Not" and right.arg == left)
+                if ["BV::Or", "BV::Xor", "BV::Plus"].include?(self.name)
+                  BV::Not.new(BV::Zero.new())
+                elsif self.name == "BV::And"
+                  BV::Zero.new()
+                else
+                  p "WTF"
+                  new [left, right]
+                end
+              elsif left.class.name == "BV::Not" and left.arg.class.name == "BV::Zero"
+                if self.name == "BV::And"
+                  right
+                elsif self.name == "BV::Or"
+                  left
+                elsif self.name == "BV::Xor"
+                  BV::Not.new(right)
+                else
+                  new l
+                end
+              elsif right.class.name == "BV::Not" and right.arg.class.name == "BV::Zero"
+                if self.name == "BV::And"
+                  left
+                elsif self.name == "BV::Or"
+                  right
+                elsif self.name == "BV::Xor"
+                  BV::Not.new(left)
+                else
+                  new [left, right]
+                end
+              else
+                new [left, right]
+              end
             end
           end
         else
           Expression.generate(size: lsize, operators: operators, closed: closed).flatten.repeated_combination(2).map do |l|
-            new l
+            left, right = l
+            if left.class.name == "BV::Zero" and ["BV::Plus", "BV::Or", "BV::Xor"].include?(self.name)
+              right
+            elsif left.class.name == "BV::Zero" and ["BV::And"].include?(self.name)
+              left
+            elsif right.class.name == "BV::Zero" and ["BV::Plus", "BV::Or", "BV::Xor"].include?(self.name)
+              left
+            elsif right.class.name == "BV::Zero" and ["BV::And"].include?(self.name)
+              right
+            elsif left == right and ["BV::Plus"].include?(self.name) and operators.include?(:shl1)
+              BV::Shr1.new(left)
+            elsif left == right and ["BV::And", "BV::Or"].include?(self.name)
+              left
+            elsif left == right and ["BV::Xor"].include?(self.name)
+              BV::Zero.new()
+            elsif (left.class.name == "BV::Not" and left.arg == right) or (right.class.name == "BV::Not" and right.arg == left)
+              if ["BV::Or", "BV::Xor", "BV::Plus"].include?(self.name)
+                BV::Not.new(BV::Zero.new())
+              elsif self.name == "BV::And"
+                BV::Zero.new()
+              else
+                p "WTF"
+                new [left, right]
+              end
+            elsif left.class.name == "BV::Not" and left.arg.class.name == "BV::Zero"
+              if self.name == "BV::And"
+                right
+              elsif self.name == "BV::Or"
+                left
+              elsif self.name == "BV::Xor"
+                BV::Not.new(right)
+              else
+                new l
+              end
+            elsif right.class.name == "BV::Not" and right.arg.class.name == "BV::Zero"
+              if self.name == "BV::And"
+                left
+              elsif self.name == "BV::Or"
+                right
+              elsif self.name == "BV::Xor"
+                BV::Not.new(left)
+              else
+                new l
+              end
+            else
+              new l
+            end
           end
         end
       end.flatten

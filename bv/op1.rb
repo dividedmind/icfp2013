@@ -9,6 +9,10 @@ module BV
       @sexp ||= [op, @arg.to_sexp]
     end
     
+    def arg
+      @arg
+    end
+
     def eval context
       @arg.eval(context).send op
     end
@@ -29,7 +33,15 @@ module BV
 
       # STDERR.puts "Generating #{self.name} for params #{params}"
       Expression.generate(params.merge size: (params[:size] - 1)).flatten.map do |e|
-        new e
+        if e.class.name == "BV::Zero" and self.name != "BV::Not"
+          e
+        elsif e.class.name == "BV::One" and self.name == "BV::Shl1"
+          BV::Zero.new()
+        elsif e.class.name == "BV::Not" and self.name == "BV::Not"
+          e.arg
+        else
+          new e
+        end
       end
     end
 

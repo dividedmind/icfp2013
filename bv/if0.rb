@@ -31,9 +31,19 @@ module BV
         (1..(size - argsize - 2)).map do |accsize|
           exprsize = size - argsize - accsize - 1
           Expression.generate(size: argsize, operators: operators, closed: closed).flatten.map do |arg|
-            Expression.generate(size: accsize, operators: operators, closed: closed).flatten.map do |acc|
+            if arg.class.name == "BV::One" or (arg.class.name == "BV::Not" and arg.arg.class.name == "BV::Zero")
               Expression.generate(size: exprsize, operators: operators, closed: closed).flatten.map do |expr|
-                new [arg, acc, expr]
+                  expr
+              end
+            else
+              Expression.generate(size: accsize, operators: operators, closed: closed).flatten.map do |acc|
+                if arg.class.name == "BV::Zero"
+                  acc
+                else
+                  Expression.generate(size: exprsize, operators: operators, closed: closed).flatten.map do |expr|
+                    new [arg, acc, expr]
+                  end
+                end
               end
             end
           end
