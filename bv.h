@@ -49,6 +49,7 @@ typedef int64_t bv_mask;
 typedef struct {
   int16_t size;
   bv_mask ops;
+  char id[32];
 } bv_problem;
 
 #endif
