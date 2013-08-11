@@ -25,7 +25,7 @@ static size_t data_read(char *ptr, size_t size, size_t nmemb, void *userdata)
   return size;
 }
 
-char * post(char * path, char * payload)
+char * post(char * path, char * payload, int debug)
 {
   static CURL *curl = NULL;
   CURLcode res;
@@ -43,7 +43,7 @@ char * post(char * path, char * payload)
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, data_read); 
     buf = BUF;
 
-    puts(payload);
+    if (debug) puts(payload);
 
     res = curl_easy_perform(curl);
     /* Check for errors */
@@ -55,7 +55,7 @@ char * post(char * path, char * payload)
     
     *buf = 0;
     
-    puts(BUF);
+    if (debug) puts(BUF);
   }
   
   return BUF;
@@ -69,7 +69,7 @@ static int download_problem(int size)
     return -1;
   }
   
-  post("train", request);
+  post("train", request, 1);
   
   free(request);
   return 0;
@@ -164,7 +164,7 @@ char guess_solution(bv_problem problem, bv_expr solution, bv_example *ex)
 {
   char sendbuf[1024];
   snprintf(sendbuf, 1024, "{\"id\": \"%s\", \"program\": \"%s\"}", problem.id, bv_print_program(solution));
-  if (!post("guess", sendbuf))
+  if (!post("guess", sendbuf, 1))
     return -3;
   
   json_object *spec, *status, *values;
@@ -201,7 +201,7 @@ static int problem_cmp(const void *_a, const void *_b)
 
 bv_problem * get_myproblems(int only_unsolved)
 {
-  if (!post("myproblems", ""))
+  if (!post("myproblems", "", 0))
     return NULL;
   
   json_object *myproblems = json_tokener_parse(BUF);
