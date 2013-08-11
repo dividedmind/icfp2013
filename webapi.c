@@ -7,6 +7,7 @@
 #include <json.h>
 
 #include "webapi.h"
+#include "print.h"
 
 #define BUFSIZE 1024
 static char BUF[BUFSIZE];
@@ -24,7 +25,7 @@ static size_t data_read(char *ptr, size_t size, size_t nmemb, void *userdata)
   return size;
 }
 
-static int download_problem(int size)
+char * post(char * path, char * payload)
 {
   static CURL *curl = NULL;
   CURLcode res;
@@ -35,32 +36,43 @@ static int download_problem(int size)
   }
   
   if(curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, "http://icfp2013lf.herokuapp.com/train?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H");
-    char * request;
-    if (asprintf(&request, "{\"size\": %d, \"operators\": []}", size) == -1) {
-      puts("error asprintfing");
-      return -1;
-    }
-    
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, request);
+    char url[128];
+    snprintf(url, 128, "http://icfp2013lf.herokuapp.com/%s?auth=0229KtQKyHAgd8LaD0JPubHAC9InNBjCPTxnhVQBvpsH1H", path);
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, data_read); 
     buf = BUF;
+
+    puts(url);
+    puts(payload);
 
     res = curl_easy_perform(curl);
     /* Check for errors */
     if(res != CURLE_OK) {
       fprintf(stderr, "curl_easy_perform() failed: %s\n",
               curl_easy_strerror(res));
-      return -1;
+      return NULL;
     }
     
     *buf = 0;
     
     puts(BUF);
-    
-    free(request);
   }
   
+  return BUF;
+}
+
+static int download_problem(int size)
+{
+  char * request;
+  if (asprintf(&request, "{\"size\": %d, \"operators\": []}", size) == -1) {
+    puts("error asprintfing");
+    return -1;
+  }
+  
+  post("train", request);
+  
+  free(request);
   return 0;
 }
 
@@ -127,4 +139,11 @@ bv_problem get_training_problem(int _size)
   puts("bad problem");
   prob.size = 0;
   return prob;
+}
+
+void guess_solution(bv_problem problem, bv_expr solution)
+{
+  char sendbuf[1024];
+  snprintf(sendbuf, 1024, "{\"id\": \"%s\", \"program\": \"%s\"}", problem.id, bv_print_program(solution));
+  post("guess", sendbuf);
 }

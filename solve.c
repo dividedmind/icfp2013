@@ -6,7 +6,7 @@
 
 int main(int argc, char **argv)
 {
-  bv_problem prob = get_training_problem(6);
+  bv_problem prob = get_training_problem(10);
   printf("%x %lx\n", prob.size, prob.ops);
   
   if (prob.ops >= BV_FOLD_MASK) {
@@ -15,7 +15,7 @@ int main(int argc, char **argv)
   }
   
   bv_expr sol = gen_solution(prob);
-  puts(bv_print_program(sol));
+  guess_solution(prob, sol);
   
   return 0;
 }
