@@ -28,7 +28,6 @@ threads = []
   problem_slices[i-1].each do |problem|
     begin
       ops = problem['operators']
-      next unless operators.all?{|x| ops.include? ops}
       p problem
       solutions = BV.generate(size: problem['size'], operators: ops)
       puts "%d solutions total." % solutions.length
@@ -36,9 +35,18 @@ threads = []
       reqs = 0
       mutex.synchronize do
         start_time = Time.now
+        
+        mismatched = []
         while solutions.length > 0
           puts "%d solutions left." % solutions.length
-          sol = solutions.shuffle.first
+          if mismatched.size > 0
+            solutions = solutions.drop_while do |s|
+              mismatched.any? do |m|
+                s.eval(Integer(m[0])) != Integer(m[1])
+              end
+            end
+          end
+          sol = solutions.first
           program = sol.to_s
           puts program
           reqs += 1
@@ -48,7 +56,9 @@ threads = []
           when 'win'
             break
           when 'mismatch'
-            solutions = solutions.pselect(threads_num) {|s| s.eval(Integer(result['values'][0])) == Integer(result['values'][1])}
+            # solutions.reject! {|s| s.eval(Integer(mismatched.last[0])) != Integer(mismatched.last[1])} if mismatched.size > 0
+            mismatched << result['values']
+            
           else
             raise "unknown response: #{result}"
           end

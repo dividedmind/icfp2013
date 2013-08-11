@@ -27,8 +27,10 @@ module BV
       size -= 1
       (1..(size / 2)).map do |lsize|
         if lsize * 2 != size
-          Expression.generate(size: lsize, operators: operators, closed: closed).flatten.map do |left|
-            Expression.generate(size: (size - lsize), operators: operators, closed: closed).flatten.map do |right|
+          lefts = Expression.generate(size: lsize, operators: operators, closed: closed).flatten
+          rights = Expression.generate(size: (size - lsize), operators: operators, closed: closed).flatten
+          lefts.map do |left|
+            rights.map do |right|
               new [left, right]
             end
           end
