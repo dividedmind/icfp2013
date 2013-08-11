@@ -46,8 +46,8 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
     sol.size = problem.size;
     int size_left = problem.size;
     while (size_left) {
-      char op = rand() & 0xf;
-      bv_mask mask = 1 << op;
+      int op = rand() & 0xf;
+      bv_mask mask = 1ull << op;
       if (!(mask & allowed))
         continue;
       if (size_left < 2 && (mask & BV_SIZE2_MASK))
@@ -56,7 +56,7 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
         continue;
       if (size_left < 4 && (mask & BV_SIZE4_MASK))
         continue;
-      sol.code |= op << ((problem.size - size_left) * 4);
+      sol.code |= 1ull * op << ((problem.size - size_left) * 4);
       size_left--;
     }
     
