@@ -41,7 +41,14 @@ typedef struct {
 #define BV_PLUS_MASK 0x2000
 #define BV_IF0_MASK 0x4000
 #define BV_FOLD_MASK 0x8000
+#define BV_TFOLD_MASK 0x10000
+#define BV_BONUS_MASK 0x20000
 
 typedef int64_t bv_mask;
+
+typedef struct {
+  int16_t size;
+  bv_mask ops;
+} bv_problem;
 
 #endif

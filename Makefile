@@ -1,6 +1,9 @@
-CFLAGS += -std=c99 -W -Wall
+CFLAGS += -std=gnu99 -W -Wall
+CFLAGS += $(shell pkg-config --cflags json libcurl)
+LDFLAGS += $(shell pkg-config --libs json libcurl)
 
-solve: main.o eval.o print.o
+solve: solve.o eval.o print.o webapi.o
+	gcc $^ $(LDFLAGS) -o $@
 
 .PHONY: clean
 
