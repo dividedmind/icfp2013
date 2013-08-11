@@ -43,7 +43,6 @@ char * post(char * path, char * payload)
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, data_read); 
     buf = BUF;
 
-    puts(url);
     puts(payload);
 
     res = curl_easy_perform(curl);
