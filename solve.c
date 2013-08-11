@@ -65,9 +65,6 @@ int autosolve(int max_size)
   if (!problems) return -2;
   
   for (bv_problem * prob = problems; prob->size <= max_size && prob->size != 0; prob++) {
-    if (prob->ops & BV_FOLD_MASK)
-      continue;
-    
     int res;
     if ((res = solve_problem(*prob)) > 0)
       return res;
