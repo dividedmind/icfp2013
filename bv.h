@@ -47,6 +47,9 @@ typedef struct {
 #define BV_OPS_MASK 0xffe0 // only plain ops
 #define BV_BASE_MASK 0x7 // constants + x
 #define BV_BASET_MASK 0x1b // constants + yz
+#define BV_SIZE4_MASK 0xc000 // if + fold
+#define BV_SIZE3_MASK 0x3c00 // binary ops
+#define BV_SIZE2_MASK 0x3e0 // unary ops
 
 typedef int64_t bv_mask;
 
