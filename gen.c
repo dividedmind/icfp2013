@@ -50,6 +50,10 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
       sol.size++;
     }
     
+    if((sol.code & 0xf) < BV_NOT) continue;
+    
+     // puts(bv_print_program(sol));
+
     if (check_ops(sol, allowed_ops, needed_ops)) continue;
     
     if (tfold) {
@@ -57,13 +61,12 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
       sol.size += 3;
     }
     
-    if (!bv_eval_program(sol, 10, NULL)) continue;
+    if (excount == 0 && !bv_eval_program(sol, 10, NULL)) continue;
 
     char ok = 1;
     for (unsigned int i = 0; i < excount; i++) {
       uint64_t result;
-      bv_eval_program(sol, examples[i].input, &result);
-      if (result != examples[i].output) {
+      if (!bv_eval_program(sol, examples[i].input, &result) || result != examples[i].output) {
         ok = 0;
         break;
       }
