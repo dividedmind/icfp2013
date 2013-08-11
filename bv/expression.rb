@@ -23,7 +23,7 @@ module BV
     
     @generated = {}
   
-    def self.generate(size: size, operators: operators, closed: false)
+    def self.generate(size: size, operators: operators, closed: false, parallel: false)
       params = { size: size, operators: operators, closed: closed }
       if memoized = @generated[params]
         return memoized
@@ -42,12 +42,16 @@ module BV
         classes += [:if0] if size > 3 && (operators.include? :if0)
         classes += [:fold] if size > 4 && !closed && (operators.include? :fold)
       end
-      generated = classes.map {|x| BV::const_get(x.capitalize).generate(size: size, operators: operators, closed: closed) }.flatten
+      if parallel
+        generated = classes.pmap(8) {|x| BV::const_get(x.capitalize).generate(size: size, operators: operators, closed: closed) }.flatten
+      else
+        generated = classes.map {|x| BV::const_get(x.capitalize).generate(size: size, operators: operators, closed: closed) }.flatten
+      end
       @generated[params] = generated.uniq
     end
     
     def has_x
-      to_sexp.flatten.include? :x
+      to_sexp == :x or (to_sexp.class.name == "Array" and to_sexp.flatten.include? :x)
     end
     
     def <=> other
