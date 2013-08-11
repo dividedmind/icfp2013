@@ -18,6 +18,7 @@ static int solve_problem(bv_problem prob)
     return -20;
   
   printf("Problem %s, size %d, ops 0x%lx\n", prob.id, prob.size, prob.ops);
+  time_t start_time = time(NULL);
 
   bv_example examples[MAX_EXAMPLES];
   int excount = 0;
@@ -33,6 +34,8 @@ static int solve_problem(bv_problem prob)
   
   if (excount == MAX_EXAMPLES)
     puts("couldn't solve!!");
+  
+  printf("%ld seconds.\n\n", time(NULL) - start_time);
   
   return ret;
 }
