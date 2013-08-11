@@ -41,7 +41,7 @@ module BV
                   expr
                 elsif expr.to_sexp == :z
                   acc
-                elsif expr.to_sexp == :y
+                elsif expr.to_sexp == :y or (expr.to_sexp.flatten.uniq.include?(:y) and !expr.to_sexp.flatten.uniq.include?(:z))
                   new [arg, BV::Zero.new(), expr]
                 elsif (expr.to_sexp.flatten.uniq & [:y, :z]).size == 0
                   expr
