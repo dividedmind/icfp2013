@@ -7,12 +7,13 @@
 #include "webapi.h"
 #include "gen.h"
 #include "print.h"
+#include "gene.h"
 
 #define MAX_EXAMPLES 1024
 
 static int finish = 0;
 
-static void int_handler(int sig)
+static void int_handler(int __attribute__((unused)) sig)
 {
   puts("Finishing after next one...");
   finish = 1;
@@ -29,22 +30,21 @@ static int solve_problem(bv_problem prob)
   printf("Problem %s, size %d, ops 0x%lx\n", prob.id, prob.size, prob.ops);
   time_t start_time = time(NULL);
 
-  bv_example examples[MAX_EXAMPLES];
-  int excount = 0;
-  int ret = -10;
-
-  while (excount < MAX_EXAMPLES) {
-    bv_expr sol = gen_solution(prob, examples, excount);
-    if ((ret = guess_solution(prob, sol, examples + excount)) > 0)
-      excount++;
+  population_t *population = make_population(prob);
+  
+  int ret;
+  for (;;) {
+    bv_expr sol = get_best(population);
+    bv_example ex;
+    if ((ret = guess_solution(prob, sol, &ex)) > 0)
+      evolve_population(population, ex);
     else if (ret != -42) // try again on "error"
       break;
   }
   
-  if (excount == MAX_EXAMPLES)
-    puts("couldn't solve!!");
-  
   printf("%ld seconds.\n\n", time(NULL) - start_time);
+  
+  free(population);
   
   return ret;
 }

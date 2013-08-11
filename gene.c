@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "eval.h"
 #include "gen.h"
@@ -109,6 +110,7 @@ void reproduce(population_t *pop)
     newones[i].score = score_solution(newones[i].solution, pop);
   }
   memcpy(pop->members + POP_SIZE - REP_COUNT, newones, sizeof(newones));
+  qsort(pop->members, POP_SIZE, sizeof(genotype_t), score_cmp);
 }
 
 void evolve_population(population_t *population, bv_example example)
@@ -117,8 +119,11 @@ void evolve_population(population_t *population, bv_example example)
   score_population(population);
   
   qsort(population->members, POP_SIZE, sizeof(genotype_t), score_cmp);
-  while (population->members[0].score > 0)
+  int generations = 0;
+  while (population->members[0].score > 0) {
+    fprintf(stderr, "Generation %d, best score: %ld\r", generations++, population->members[0].score);
     reproduce(population);
+  }
 }
 
 bv_expr get_best(population_t *population)
