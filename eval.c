@@ -7,7 +7,7 @@
 uint64_t bv_eval(bv_expr *prog, uint64_t x)
 {
   uint64_t y = 0, z = 0, folding = 0;
-  uint64_t stack[64];
+  uint64_t stack[1024];
   int top = -1, folditer = 0;
   int size = prog->size;
   
@@ -97,8 +97,6 @@ bad:
 
 char bv_eval_program(bv_expr prog, uint64_t arg, uint64_t *result)
 {
-  int start_size = prog.size;
-  
   uint64_t res = bv_eval(&prog, arg);
   
   if (prog.size == -1) return 0;
