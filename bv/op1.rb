@@ -19,6 +19,14 @@ module BV
     end
     
     def self.generate params
+      if self.name == "BV::Shr4"
+        params[:operators] = params[:operators] - [:shr1]
+      end
+
+      if self.name == "BV:Shr16"
+        params[:operators] = params[:operators] - [:shr4,:shr1]
+      end
+
       # STDERR.puts "Generating #{self.name} for params #{params}"
       Expression.generate(params.merge size: (params[:size] - 1)).flatten.map do |e|
         new e
