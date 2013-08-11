@@ -41,8 +41,8 @@ bv_expr gen_solution(bv_problem problem, bv_example *examples, size_t excount)
       sol.size++;
     }
     
-    if (bv_eval_program(sol, 0, NULL) != sol.size) continue;
     if (check_ops(sol, allowed_ops, needed_ops)) continue;
+    if (!bv_eval_program(sol, 0, NULL)) continue;
     
     char ok = 1;
     for (unsigned int i = 0; i < excount; i++) {
