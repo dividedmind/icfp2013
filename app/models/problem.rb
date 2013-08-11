@@ -11,8 +11,8 @@ class Problem < Sequel::Model
       record.size = problem['size']
       record.operators = problem['operators'].pg_array
       record.solved = !!problem['solved']
-      record.expires_at = Time.now + problem['timeLeft'].seconds if problem['timeLeft']
-      record.expires_at = nil if problem['timeLeft'] == 0
+      record.expires_at ||= Time.now + problem['timeLeft'].seconds if problem['timeLeft']
+      record.expires_at ||= 1.second.ago if problem['timeLeft'] == 0
       
       record.save
     end
