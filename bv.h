@@ -21,7 +21,7 @@
 #define BV_FOLD 0xF
 
 typedef struct {
-  uint16_t code;
+  __int128 code;
   int16_t size;
 } bv_expr;
 
