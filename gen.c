@@ -17,9 +17,9 @@ bv_expr gen_solution(bv_problem problem)
     sol.size = problem.size - 1;
     sol.code = random();
     
-    printf("%llx\n", sol.code);
-    
-    if (bv_eval_program(sol, 0, NULL) == 0) continue;
+    if ((sol.size = bv_eval_program(sol, 0, NULL)) == 0) continue;
+
+    sol.size++;
     
     return sol;
   }
