@@ -1,7 +1,6 @@
 module BV
   class Op1 < Expression
     def initialize sexp, context = {}
-      p sexp
       sexp = Expression.parse sexp[0], context unless sexp.is_a?(Expression)
       @arg = sexp
     end
