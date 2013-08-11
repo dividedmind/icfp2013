@@ -2,12 +2,21 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <signal.h>
 
 #include "webapi.h"
 #include "gen.h"
 #include "print.h"
 
 #define MAX_EXAMPLES 1024
+
+static int finish = 0;
+
+static void int_handler(int sig)
+{
+  puts("Finishing after next one...");
+  finish = 1;
+}
 
 // retuns zero im solved
 // negative on error
@@ -62,6 +71,8 @@ int autosolve(int max_size)
     int res;
     if ((res = solve_problem(*prob)) > 0)
       return res;
+    if (finish)
+      return 0;
   }
   
   return 0;
@@ -70,6 +81,7 @@ int autosolve(int max_size)
 int main(int argc, char **argv)
 {
   srand(time(NULL));
+  signal(SIGINT, int_handler);
 
   if (argc == 2) {
     int size = atoi(argv[1]);
