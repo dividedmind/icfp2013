@@ -1,4 +1,4 @@
-CFLAGS += -std=gnu99 -W -Wall -g -O3 -march=native
+CFLAGS += -std=gnu99 -W -Wall -g -O3
 CFLAGS += $(shell pkg-config --cflags json libcurl)
 LDFLAGS += $(shell pkg-config --libs json libcurl)
 
