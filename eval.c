@@ -50,6 +50,7 @@ int16_t bv_eval(bv_expr *prog, uint64_t x, uint64_t y, uint64_t z)
     }
     case BV_FOLD:
     {
+      prog->size--;
       uint64_t expr = bv_eval(prog, x, y, z);
       uint64_t acc = bv_eval(prog, x, y, z);
       for (int i = 0; i < 8; i++) { // will the compiler unroll?
