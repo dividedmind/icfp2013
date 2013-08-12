@@ -27,13 +27,11 @@ static size_t data_read(char *ptr, size_t size, size_t nmemb, void *userdata)
 
 char * post(char * path, char * payload, int debug)
 {
-  static CURL *curl = NULL;
+  CURL *curl = NULL;
   CURLcode res;
 
-  if (!curl) {
     curl_global_init(CURL_GLOBAL_ALL);
     curl = curl_easy_init();
-  }
   
   if(curl) {
     char url[128];
@@ -57,6 +55,7 @@ char * post(char * path, char * payload, int debug)
     
     if (debug) puts(BUF);
   }
+  curl_easy_cleanup(curl);
   
   return BUF;
 }
@@ -196,7 +195,11 @@ char guess_solution(bv_problem problem, bv_expr solution, bv_example *ex)
 static int problem_cmp(const void *_a, const void *_b)
 {
   bv_problem *a = (bv_problem *) _a, *b = (bv_problem *) _b;
-  return a->size - b->size;
+  int result = a->size - b->size;
+  if (result)
+    return result;
+  else
+    return a->ops - b->ops;
 }
 
 bv_problem * get_myproblems(int only_unsolved)

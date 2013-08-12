@@ -33,15 +33,16 @@ static int solve_problem(bv_problem prob)
   population_t *population = make_population(prob);
   
   int ret;
+  int member = 0;
+  bv_example ex;
   for (;;) {
-    bv_expr sol = get_best(population);
-    bv_example ex;
+    bv_expr sol = population->members[member++].solution;
     if ((ret = guess_solution(prob, sol, &ex)) > 0)
       evolve_population(population, &ex);
     else if (ret != -42) // try again on "error"
       break;
     else
-      evolve_population(population, NULL); // reshuffle
+      population->members[member-1].solution = gen_solution(prob, NULL, 0);
   }
   
   printf("%ld seconds.\n\n", time(NULL) - start_time);
@@ -66,12 +67,16 @@ int autosolve(int max_size)
   bv_problem * problems = get_myproblems(1);
   if (!problems) return -2;
   
-  for (bv_problem * prob = problems; prob->size <= max_size && prob->size != 0; prob++) {
+//#pragma omp parallel for schedule(dynamic, 1) num_threads(2)
+  for (int i = 0; i < 1000; i++){
+    if (finish)
+      continue;
+    bv_problem *prob = problems + i; 
+    if (prob->size > max_size || prob->size == 0)
+      continue;
     int res;
     if ((res = solve_problem(*prob)) > 0)
-      return res;
-    if (finish)
-      return 0;
+      finish = 1;
   }
   
   return 0;

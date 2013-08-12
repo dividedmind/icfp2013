@@ -61,7 +61,6 @@ static int score_solution(bv_expr sol, population_t *pop)
 
 static void score_population(population_t * pop)
 {
-#pragma omp parallel for
   for (int i = 0; i < POP_SIZE; i++)
     pop->members[i].score = score_solution(pop->members[i].solution, pop);
 }
@@ -89,7 +88,7 @@ static __int128 random_mask()
 
 void reproduce(population_t *pop)
 {
-  const int REP_COUNT = POP_SIZE >> 2;
+  const int REP_COUNT = POP_SIZE * 4 / 5;
   genotype_t newones[REP_COUNT];
   
 #pragma omp parallel for
@@ -98,15 +97,14 @@ void reproduce(population_t *pop)
     __int128 mask = random_mask();
     newones[i].solution.size = a->solution.size;
     newones[i].solution.code = (a->solution.code & mask) | (b->solution.code & ~mask);
+    for (int j = 0; j < 16; j++) {
     int mutation = rand();
-    if (mutation & 1) {
-      mutation >>= 1;
       mask = 1ull << (mutation & 0x7f);
       if (mutation & 0x80)
         newones[i].solution.code |= mask;
       else
         newones[i].solution.code &= ~mask;
-    }
+}
     newones[i].score = score_solution(newones[i].solution, pop);
   }
   memcpy(pop->members + POP_SIZE - REP_COUNT, newones, sizeof(newones));
@@ -122,9 +120,16 @@ void evolve_population(population_t *population, bv_example *example)
   
   qsort(population->members, POP_SIZE, sizeof(genotype_t), score_cmp);
   int generations = 0;
+  int best_score = 1 << 16, best_gen = 0;
+  int start_score = population->members[0].score;
   while (population->members[0].score > 0) {
     fprintf(stderr, "Generation %d, best score: %ld\r", generations++, population->members[0].score);
+    if (population->members[0].score < best_score) {
+      best_score = population->members[0].score;
+      best_gen = generations;
+    }
     reproduce(population);
+    if (best_score != start_score && (generations - best_gen) > 1024) break; //let's get some evo pressure
   }
 }
 

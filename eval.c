@@ -6,7 +6,7 @@
  */
 uint64_t bv_eval(bv_expr *prog, uint64_t x)
 {
-  uint64_t y = 0, z = 0, folding = 0;
+  uint64_t y = 0xdeadbeef, z = 0xcafebabe, folding = 0;
   uint64_t stack[1024];
   int top = -1, folditer = 0;
   int size = prog->size;
@@ -87,6 +87,9 @@ uint64_t bv_eval(bv_expr *prog, uint64_t x)
           folditer++;
           size = prog->size;
           top = -1;
+        } else {
+          y = 0xdeadbeef;
+          z = 0xb19b00b5;
         }
         continue;
       default:

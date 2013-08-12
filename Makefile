@@ -1,4 +1,4 @@
-CFLAGS += -std=gnu99 -W -Wall -g -O3 -fopenmp
+CFLAGS += -std=gnu99 -W -Wall -O3 -fopenmp
 CFLAGS += $(shell pkg-config --cflags json libcurl)
 LDFLAGS += $(shell pkg-config --libs json libcurl) -fopenmp -lm
 
